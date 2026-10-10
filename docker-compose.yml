@@ -1,0 +1,50 @@
+# SelfHealOps — full stack (backend API + frontend SPA).
+# Usage:  docker compose up --build
+# The frontend is exposed on http://localhost:8080 and proxies /api to the backend.
+name: selfhealops
+
+services:
+  backend:
+    build:
+      context: ./backend
+    image: selfhealops-backend:latest
+    restart: unless-stopped
+    environment:
+      # Persistent SQLite database stored on the named volume mounted at /data.
+      DATABASE_URL: sqlite:////data/selfhealops.db
+      ENVIRONMENT: ${ENVIRONMENT:-production}
+      CORS_ORIGINS: ${CORS_ORIGINS:-http://localhost:8080,http://localhost:5173}
+      # Optional GitHub integration.
+      GITHUB_TOKEN: ${GITHUB_TOKEN:-}
+      GITHUB_API_BASE_URL: ${GITHUB_API_BASE_URL:-https://api.github.com}
+      # Optional LLM provider.
+      LLM_PROVIDER: ${LLM_PROVIDER:-rules}
+      OLLAMA_BASE_URL: ${OLLAMA_BASE_URL:-http://host.docker.internal:11434}
+      OLLAMA_MODEL: ${OLLAMA_MODEL:-}
+      # Monitoring.
+      POLL_INTERVAL_SECONDS: ${POLL_INTERVAL_SECONDS:-0}
+      # Security limits.
+      MAX_LOG_CHARS: ${MAX_LOG_CHARS:-60000}
+      MAX_REQUEST_BODY_BYTES: ${MAX_REQUEST_BODY_BYTES:-1048576}
+    volumes:
+      - backend-data:/data
+    ports:
+      - "${BACKEND_PORT:-8000}:8000"
+    extra_hosts:
+      # Lets the container reach a host-run Ollama (Linux).
+      - "host.docker.internal:host-gateway"
+
+  frontend:
+    build:
+      context: ./frontend
+    image: selfhealops-frontend:latest
+    restart: unless-stopped
+    depends_on:
+      backend:
+        condition: service_healthy
+    ports:
+      - "${FRONTEND_PORT:-8080}:80"
+
+volumes:
+  backend-data:
+    driver: local

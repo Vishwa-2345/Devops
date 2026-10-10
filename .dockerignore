@@ -1,0 +1,28 @@
+# Build artifacts and dependencies
+**/node_modules
+**/dist
+**/coverage
+**/.venv
+**/__pycache__
+**/*.pyc
+**/.pytest_cache
+**/.ruff_cache
+**/.mypy_cache
+
+# Local data & secrets
+**/*.db
+**/*.sqlite
+**/*.sqlite3
+backend/data
+.env
+.env.*
+!.env.example
+
+# Git / editors
+.git
+.gitignore
+.vscode
+.idea
+*.md
+docs
+scripts

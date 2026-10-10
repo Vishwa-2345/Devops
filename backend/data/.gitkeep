@@ -1,0 +1,2 @@
+# SelfHealOps — persistent data directory.
+# The SQLite database is stored here at runtime and is git-ignored.

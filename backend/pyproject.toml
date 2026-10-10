@@ -1,0 +1,53 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "selfhealops-backend"
+version = "0.1.0"
+description = "SelfHealOps — Agentic AI-based self-healing DevOps automation backend"
+readme = "README.md"
+requires-python = ">=3.11"
+license = { text = "MIT" }
+authors = [{ name = "SelfHealOps" }]
+dependencies = [
+    "fastapi>=0.110",
+    "uvicorn[standard]>=0.27",
+    "pydantic>=2.6",
+    "pydantic-settings>=2.2",
+    "SQLAlchemy>=2.0",
+    "httpx>=0.27",
+    "python-dotenv>=1.0",
+    "langgraph>=0.2",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.0",
+    "pytest-asyncio>=0.23",
+    "respx>=0.21",
+    "ruff>=0.5",
+]
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["app*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q"
+filterwarnings = ["ignore::DeprecationWarning"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "B", "UP", "W"]
+# B008: FastAPI Depends() in defaults is idiomatic.
+# E501: line length is enforced by the formatter.
+# UP042: we intentionally use `str, enum.Enum` for JSON/DB-friendly value enums.
+ignore = ["B008", "E501", "UP042"]
+
+[tool.ruff.format]
+quote-style = "double"
